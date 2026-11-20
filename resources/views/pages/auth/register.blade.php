@@ -30,6 +30,20 @@
                 placeholder="email@example.com"
             />
 
+            <!-- WhatsApp Phone -->
+            <flux:input
+                name="phone"
+                :label="__('WhatsApp number')"
+                description:trailing="{{ __('Your medication reminders will be sent to this number.') }}"
+                :value="old('phone')"
+                type="tel"
+                inputmode="tel"
+                mask="(99) 99999-9999"
+                required
+                autocomplete="tel-national"
+                placeholder="(11) 98765-4321"
+            />
+
             <!-- Password -->
             <flux:input
                 name="password"
@@ -52,6 +66,15 @@
                 :placeholder="__('Confirm password')"
                 passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
                 viewable
+            />
+
+            <!-- Privacy Consent (LGPD) -->
+            <flux:checkbox
+                name="privacy_consent"
+                value="1"
+                :checked="(bool) old('privacy_consent')"
+                :label="__('I agree that Remedin stores information about my medications')"
+                :description="__('This is health data. We use it only to send your reminders, and you can delete everything at any time.')"
             />
 
             <div class="flex items-center justify-end">

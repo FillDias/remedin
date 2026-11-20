@@ -1,10 +1,14 @@
 <?php
 
+use App\Actions\NormalizePhoneNumber;
+use App\Actions\UpdateUserProfile;
 use App\Concerns\ProfileValidationRules;
+use App\Enums\BrazilianTimezone;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
@@ -15,6 +19,8 @@ new #[Title('Profile settings')] class extends Component {
 
     public string $name = '';
     public string $email = '';
+    public string $phone = '';
+    public string $timezone = '';
 
     /**
      * Mount the component.
@@ -23,28 +29,37 @@ new #[Title('Profile settings')] class extends Component {
     {
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
+        $this->phone = Auth::user()->nationalPhone();
+        $this->timezone = Auth::user()->timezone;
     }
 
     /**
      * Update the profile information for the currently authenticated user.
      */
-    public function updateProfileInformation(): void
-    {
+    public function updateProfileInformation(
+        NormalizePhoneNumber $normalizePhoneNumber,
+        UpdateUserProfile $updateUserProfile,
+    ): void {
         $user = Auth::user();
 
         if (config('fortify.lowercase_usernames')) {
             $this->email = Str::lower($this->email);
         }
 
-        $validated = $this->validate($this->profileRules($user->id));
+        $validated = Validator::make([
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $normalizePhoneNumber->handle($this->phone),
+            'timezone' => $this->timezone,
+        ], [
+            ...$this->profileRules($user->id),
+            'phone' => $this->phoneRules($user->id),
+            'timezone' => $this->timezoneRules(),
+        ], $this->phoneMessages())->validate();
 
-        $user->fill($validated);
+        $updateUserProfile->handle($user, $validated);
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->save();
+        $this->phone = $user->nationalPhone();
 
         Flux::toast(variant: 'success', text: __('Profile updated.'));
     }
@@ -86,7 +101,7 @@ new #[Title('Profile settings')] class extends Component {
 
     <flux:heading level="2" class="sr-only">{{ __('Profile settings') }}</flux:heading>
 
-    <x-pages::settings.layout :heading="__('Profile')" :subheading="__('Update your name and email address')">
+    <x-pages::settings.layout :heading="__('Profile')" :subheading="__('Update your contact details and time zone')">
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
             <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
 
@@ -111,6 +126,28 @@ new #[Title('Profile settings')] class extends Component {
                     </div>
                 @endif
             </div>
+
+            <flux:input
+                wire:model="phone"
+                :label="__('WhatsApp number')"
+                description:trailing="{{ __('Changing your number requires verifying it again.') }}"
+                type="tel"
+                inputmode="tel"
+                mask="(99) 99999-9999"
+                required
+                autocomplete="tel-national"
+                placeholder="(11) 98765-4321"
+            />
+
+            <flux:select
+                wire:model="timezone"
+                :label="__('Time zone')"
+                description:trailing="{{ __('Your reminders follow this time zone.') }}"
+            >
+                @foreach (BrazilianTimezone::cases() as $timezoneOption)
+                    <flux:select.option :value="$timezoneOption->value">{{ $timezoneOption->label() }}</flux:select.option>
+                @endforeach
+            </flux:select>
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">

@@ -20,6 +20,11 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $name
  * @property string $email
  * @property Carbon|null $email_verified_at
+ * @property string|null $phone
+ * @property Carbon|null $phone_verified_at
+ * @property string $timezone
+ * @property Carbon|null $whatsapp_opt_in_at
+ * @property Carbon|null $privacy_consent_at
  * @property string $password
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
@@ -28,7 +33,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'phone', 'timezone', 'privacy_consent_at'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
@@ -44,6 +49,9 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
+            'whatsapp_opt_in_at' => 'datetime',
+            'privacy_consent_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -58,5 +66,25 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return Str::length($initials) > 1
             ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
             : $initials;
+    }
+
+    /**
+     * Get the phone number in Brazilian national format, e.g. "(11) 98765-4321".
+     */
+    public function nationalPhone(): string
+    {
+        if ($this->phone === null || preg_match('/^\+55(\d{2})(\d{5})(\d{4})$/', $this->phone, $parts) !== 1) {
+            return (string) $this->phone;
+        }
+
+        return "({$parts[1]}) {$parts[2]}-{$parts[3]}";
+    }
+
+    /**
+     * Determine if the user has verified their WhatsApp phone number.
+     */
+    public function hasVerifiedPhone(): bool
+    {
+        return $this->phone_verified_at !== null;
     }
 }

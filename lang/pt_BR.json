@@ -419,5 +419,19 @@
     "You left the team \":name\"": "You left the team \":name\"",
     "You will be prompted for a secure, random pin during login, which you can retrieve from the TOTP-supported application on your phone.": "Você será solicitado a fornecer um PIN seguro e aleatório durante o login, que você pode obter no aplicativo compatível com TOTP no seu telefone.",
     "You've been invited to join :teamName": "Você foi convidado para entrar na equipe :teamName",
-    "Your email address is unverified.": "Seu endereço de e-mail não foi verificado."
+    "Your email address is unverified.": "Seu endereço de e-mail não foi verificado.",
+    "Enter a mobile number with area code, e.g. (11) 98765-4321.": "Informe um celular com DDD, ex.: (11) 98765-4321.",
+    "You must accept the privacy terms to create an account.": "Para criar a conta, você precisa aceitar os termos de privacidade.",
+    "WhatsApp number": "Celular com WhatsApp",
+    "Your medication reminders will be sent to this number.": "É para este número que enviaremos os lembretes dos seus remédios.",
+    "I agree that Remedin stores information about my medications": "Concordo que o Remedin guarde informações sobre os meus remédios",
+    "This is health data. We use it only to send your reminders, and you can delete everything at any time.": "São dados de saúde. Usamos apenas para enviar seus lembretes, e você pode apagar tudo quando quiser.",
+    "Update your contact details and time zone": "Atualize seus dados de contato e fuso horário",
+    "Changing your number requires verifying it again.": "Se você trocar o número, será preciso verificá-lo de novo.",
+    "Time zone": "Fuso horário",
+    "Your reminders follow this time zone.": "Seus lembretes seguem este fuso horário.",
+    "Fernando de Noronha (UTC-2)": "Fernando de Noronha (UTC-2)",
+    "Brasília (UTC-3)": "Brasília, a maioria dos estados (UTC-3)",
+    "Amazon (UTC-4)": "Amazonas, MT, MS, RO e RR (UTC-4)",
+    "Acre (UTC-5)": "Acre (UTC-5)"
 }

@@ -78,6 +78,98 @@ test('email verification status is unchanged when email address is unchanged', f
     expect($user->refresh()->email_verified_at)->not->toBeNull();
 });
 
+test('profile page shows the phone in national format', function () {
+    $this->actingAs(User::factory()->create(['phone' => '+5511987654321']));
+
+    Livewire::test('pages::settings.profile')
+        ->assertSet('phone', '(11) 98765-4321');
+});
+
+test('changing the phone number resets its verification', function () {
+    $user = User::factory()->create(['phone' => '+5511987654321']);
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::settings.profile')
+        ->set('phone', '(21) 99876-5432')
+        ->call('updateProfileInformation')
+        ->assertHasNoErrors()
+        ->assertSet('phone', '(21) 99876-5432');
+
+    $user->refresh();
+    expect($user->phone)->toBe('+5521998765432');
+    expect($user->phone_verified_at)->toBeNull();
+    expect($user->whatsapp_opt_in_at)->toBeNull();
+});
+
+test('phone verification is unchanged when the phone number is unchanged', function () {
+    $user = User::factory()->create(['phone' => '+5511987654321']);
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::settings.profile')
+        ->set('name', 'Test User')
+        ->call('updateProfileInformation')
+        ->assertHasNoErrors();
+
+    $user->refresh();
+    expect($user->phone_verified_at)->not->toBeNull();
+    expect($user->whatsapp_opt_in_at)->not->toBeNull();
+});
+
+test('phone must be a valid brazilian mobile number', function () {
+    $user = User::factory()->create(['phone' => '+5511987654321']);
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::settings.profile')
+        ->set('phone', '(11) 3456-7890')
+        ->call('updateProfileInformation')
+        ->assertHasErrors(['phone' => 'regex']);
+
+    expect($user->refresh()->phone)->toBe('+5511987654321');
+});
+
+test('phone must not belong to another user', function () {
+    User::factory()->create(['phone' => '+5521998765432']);
+    $user = User::factory()->create(['phone' => '+5511987654321']);
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::settings.profile')
+        ->set('phone', '(21) 99876-5432')
+        ->call('updateProfileInformation')
+        ->assertHasErrors(['phone' => 'O valor indicado para o campo telefone já se encontra registrado.']);
+
+    expect($user->refresh()->phone)->toBe('+5511987654321');
+});
+
+test('time zone can be updated', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::settings.profile')
+        ->set('timezone', 'America/Manaus')
+        ->call('updateProfileInformation')
+        ->assertHasNoErrors();
+
+    expect($user->refresh()->timezone)->toBe('America/Manaus');
+});
+
+test('time zone must be one of the supported brazilian time zones', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::settings.profile')
+        ->set('timezone', 'Europe/Lisbon')
+        ->call('updateProfileInformation')
+        ->assertHasErrors(['timezone']);
+
+    expect($user->refresh()->timezone)->toBe('America/Sao_Paulo');
+});
+
 test('user can delete their account', function () {
     $user = User::factory()->create();
 
