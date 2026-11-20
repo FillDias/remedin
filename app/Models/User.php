@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -65,6 +66,26 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function medications(): HasMany
     {
         return $this->hasMany(Medication::class);
+    }
+
+    /**
+     * Get the WhatsApp reminders scheduled for the user.
+     *
+     * @return HasMany<Reminder, $this>
+     */
+    public function reminders(): HasMany
+    {
+        return $this->hasMany(Reminder::class);
+    }
+
+    /**
+     * Get all the user's doses, through their reminders.
+     *
+     * @return HasManyThrough<Dose, Reminder, $this>
+     */
+    public function doses(): HasManyThrough
+    {
+        return $this->hasManyThrough(Dose::class, Reminder::class);
     }
 
     /**

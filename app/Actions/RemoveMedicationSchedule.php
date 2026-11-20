@@ -6,6 +6,8 @@ use App\Models\MedicationSchedule;
 
 class RemoveMedicationSchedule
 {
+    public function __construct(private RefreshMedicationDoses $refreshMedicationDoses) {}
+
     /**
      * Stop reminding at this time.
      *
@@ -14,5 +16,7 @@ class RemoveMedicationSchedule
     public function handle(MedicationSchedule $schedule): void
     {
         $schedule->update(['is_active' => false]);
+
+        $this->refreshMedicationDoses->handle($schedule->medication);
     }
 }

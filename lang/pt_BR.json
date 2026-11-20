@@ -529,5 +529,21 @@
     "Archived": "Arquivados",
     "Medications you no longer take. Open one to reactivate it.": "Remédios que você não toma mais. Abra um para reativar.",
     "No archived medications.": "Nenhum remédio arquivado.",
-    "View archived (:count)": "Ver arquivados (:count)"
+    "View archived (:count)": "Ver arquivados (:count)",
+    "Pending": "Pendente",
+    "Taken": "Tomado",
+    "Skipped": "Pulado",
+    "Missed": "Esquecido",
+    "Today": "Hoje",
+    "No doses today": "Nenhuma dose hoje",
+    "None of your medications has a reminder time today.": "Nenhum dos seus remédios tem horário de lembrete hoje.",
+    "You took everything today 🎉": "Você tomou tudo hoje 🎉",
+    ":taken of :total dose taken today|:taken of :total doses taken today": ":taken de :total dose tomada hoje|:taken de :total doses tomadas hoje",
+    "Doses taken today": "Doses tomadas hoje",
+    "Mark :name as taken": "Marcar :name como tomado",
+    "Took it": "Tomei",
+    "Skip :name": "Pular :name",
+    "Skip": "Pular",
+    "Undo the answer for :name": "Desfazer a resposta de :name",
+    "Undo": "Desfazer"
 }

@@ -4,11 +4,15 @@ use App\Models\Medication;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
-use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
-new #[Title('My medications')] class extends Component {
+new class extends Component {
+    public function render()
+    {
+        return $this->view()->title(__('My medications'));
+    }
+
     #[Url(as: 'arquivados')]
     public bool $showArchived = false;
 

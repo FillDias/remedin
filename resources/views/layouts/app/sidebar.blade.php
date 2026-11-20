@@ -11,8 +11,8 @@
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
-                <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                    {{ __('Dashboard') }}
+                <flux:sidebar.item icon="calendar-days" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                    {{ __('Today') }}
                 </flux:sidebar.item>
 
                 <flux:sidebar.item icon="pill" :href="route('medications.index')" :current="request()->routeIs('medications.*')" wire:navigate>

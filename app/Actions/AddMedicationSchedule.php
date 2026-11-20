@@ -8,6 +8,8 @@ use Illuminate\Validation\ValidationException;
 
 class AddMedicationSchedule
 {
+    public function __construct(private RefreshMedicationDoses $refreshMedicationDoses) {}
+
     /**
      * Add a reminder time to the medication.
      *
@@ -36,11 +38,15 @@ class AddMedicationSchedule
             $days = collect($days)->map(fn ($day) => (int) $day)->unique()->sort()->values()->all();
         }
 
-        return $medication->schedules()->create([
+        $schedule = $medication->schedules()->create([
             'time' => $time,
             'days_of_week' => $days === null || count($days) === 7 ? null : $days,
             'dose_amount' => $data['dose_amount'],
             'is_active' => true,
         ]);
+
+        $this->refreshMedicationDoses->handle($medication);
+
+        return $schedule;
     }
 }

@@ -7,6 +7,8 @@ use App\Models\Medication;
 
 class UpdateMedication
 {
+    public function __construct(private RefreshMedicationDoses $refreshMedicationDoses) {}
+
     /**
      * Update the medication's details.
      *
@@ -24,6 +26,12 @@ class UpdateMedication
             $medication->low_stock_notified_at = null;
         }
 
+        $changesUpcomingDoses = $medication->isDirty(['dose_amount', 'starts_on', 'ends_on']);
+
         $medication->save();
+
+        if ($changesUpcomingDoses) {
+            $this->refreshMedicationDoses->handle($medication);
+        }
     }
 }

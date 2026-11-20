@@ -96,6 +96,16 @@ class Medication extends Model
     }
 
     /**
+     * Get every dose generated for this medication.
+     *
+     * @return HasMany<Dose, $this>
+     */
+    public function doses(): HasMany
+    {
+        return $this->hasMany(Dose::class);
+    }
+
+    /**
      * Get the dose as shown to the user, e.g. "1 comprimido" or "0,5 comprimido".
      */
     public function doseLabel(): string
@@ -131,6 +141,21 @@ class Medication extends Model
         $daysLeft = $this->daysOfStockLeft();
 
         return $daysLeft !== null && $daysLeft <= $this->low_stock_days;
+    }
+
+    /**
+     * Add (positive) or remove (negative) units from the stock, never going below zero.
+     *
+     * Does nothing when the stock is not tracked.
+     */
+    public function adjustStock(float $units): void
+    {
+        if ($this->stock_quantity === null || ! $this->form->tracksStock()) {
+            return;
+        }
+
+        $this->stock_quantity = number_format(max(0, (float) $this->stock_quantity + $units), 2, '.', '');
+        $this->save();
     }
 
     /**
